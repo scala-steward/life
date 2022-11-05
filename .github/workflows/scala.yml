@@ -16,21 +16,26 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Set up JDK
+
+    - name: JDK
       uses: actions/setup-java@v3
       with:
-        java-version: '11'
+        java-version: '17'
         distribution: 'temurin'
         cache: 'sbt'
-    - name: Run tests
+
+    - name: Test
       run: sbt clean coverage test
-    - name: Run coverage
+
+    - name: Coverage
       run: sbt coverageReport
+
+    - name: Publish coverage
+      uses: tsunematsu21/actions-publish-gh-pages@v1.0.2
+      with:
+        dir: scala-3.2.0/scoverage-report
+        branch: gh-pages
+        token: ${{ secrets.ACCESS_TOKEN }}
+
     - name: Create scaladoc
       run: sbt doc
-    - name: Linter
-      uses: github/super-linter@v4
-      env:
-        VALIDATE_ALL_CODEBASE: false
-        DEFAULT_BRANCH: "main"
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
