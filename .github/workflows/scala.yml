@@ -33,7 +33,7 @@ jobs:
     - name: Publish coverage
       uses: tsunematsu21/actions-publish-gh-pages@v1.0.2
       with:
-        dir: scala-3.2.0/scoverage-report
+        dir: target/scala-3.2.0/scoverage-report
         branch: gh-pages
         token: ${{ secrets.ACCESS_TOKEN }}
 
