@@ -67,7 +67,7 @@ class CellsSpec extends AnyWordSpec with Matchers:
 
       "missing file" in {
         Cells.fromFilename("noWorldFile.life") match
-          case Left(text)   => text should be("noWorldFile.life (The system cannot find the file specified)")
+          case Left(text)   => text should include("noWorldFile.life")
           case Right(cells) => fail(s"Unexpected cells ${cells.toString}")
       }
 
