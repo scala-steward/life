@@ -14,6 +14,9 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    permissions:
+      repository-projects: write
+
     steps:
     - name: Checkout
       uses: actions/checkout@v3
