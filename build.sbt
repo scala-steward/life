@@ -9,7 +9,6 @@ val scalatestVersion     = "3.2.14"
 val scalatestPlusVersion = scalatestVersion + ".0"
 
 Compile / compile / wartremoverErrors ++= Warts.allBut(Wart.Equals, Wart.Recursion, Wart.ThreadSleep)
-Compile / doc / scalacOptions ++= Seq("-groups")
 
 lazy val root = project
   .in(file("."))
