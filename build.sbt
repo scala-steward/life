@@ -4,11 +4,13 @@ organizationName := "Nigel Eke"
 startYear        := Some(2022)
 licenses += ("BSD-3-Clause", new URL("https://opensource.org/licenses/BSD-3-Clause"))
 
+Compile / compile / wartremoverErrors ++= Warts.allBut(Wart.Equals, Wart.Recursion, Wart.ThreadSleep)
+
+publish / skip := true
+
 val configVersion        = "1.4.2"
 val scalatestVersion     = "3.2.14"
 val scalatestPlusVersion = scalatestVersion + ".0"
-
-Compile / compile / wartremoverErrors ++= Warts.allBut(Wart.Equals, Wart.Recursion, Wart.ThreadSleep)
 
 lazy val root = project
   .in(file("."))
