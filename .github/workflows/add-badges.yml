@@ -21,17 +21,17 @@ jobs:
           badges: |
             [
               {
-                "badge": "https://img.shields.io/github/license/${{ env.repo_owner }}/${{ env.repo_name }}?style=flat-square",
+                "badge": "https://img.shields.io/github/license/${{ env.repo_owner }}/${{ env.repo_name }}?style=plastic",
                 "alt": "BSD-3 License",
                 "link": "${{ env.repo_url }}/blob/master/LICENSE"
               },
               {
-                "badge": "https://img.shields.io/badge/language-Scala-blue.svg?style=flat-square",
+                "badge": "https://img.shields.io/badge/language-Scala-blue.svg?style=plastic",
                 "alt": "Language",
                 "link": "https://www.scala-lang.org"
               },
               {
-                "badge": "https://img.shields.io/github/workflow/status/${{ env.repo_owner }}/${{ env.repo_name }}/Release/main?logo=github&style=flat-square",
+                "badge": "https://img.shields.io/github/workflow/status/${{ env.repo_owner }}/${{ env.repo_name }}/Build?style=plastic",
                 "alt": "build",
                 "link": "${{ env.repo_url }}/actions/workflows/scala.yml"
               }
