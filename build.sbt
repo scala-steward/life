@@ -6,10 +6,7 @@ licenses += ("BSD-3-Clause", new URL("https://opensource.org/licenses/BSD-3-Clau
 
 Compile / compile / wartremoverErrors ++= Warts.allBut(Wart.Equals, Wart.Recursion, Wart.ThreadSleep)
 
-publish / skip := true
-
 import ReleaseTransformations._
-
 releaseProcess := Seq[ReleaseStep](
   checkSnapshotDependencies, // : ReleaseStep
   inquireVersions,           // : ReleaseStep
@@ -18,10 +15,8 @@ releaseProcess := Seq[ReleaseStep](
   setReleaseVersion,         // : ReleaseStep
   commitReleaseVersion,      // : ReleaseStep, performs the initial git checks
   tagRelease,                // : ReleaseStep
-//  publishArtifacts,          // : ReleaseStep, checks whether `publishTo` is properly set up
-  setNextVersion,    // : ReleaseStep
-  commitNextVersion, // : ReleaseStep
-  pushChanges        // : ReleaseStep, also checks that an upstream branch is properly configured
+  setNextVersion,            // : ReleaseStep
+  commitNextVersion          // : ReleaseStep
 )
 
 val configVersion        = "1.4.2"
