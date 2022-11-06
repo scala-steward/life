@@ -10,13 +10,12 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  build-and-deploy:
 
     runs-on: ubuntu-latest
 
     permissions:
-      pages: write
-      repository-projects: write
+      contents: write
 
     steps:
     - name: Checkout
@@ -36,11 +35,9 @@ jobs:
       run: sbt coverageReport
 
     - name: Publish Coverage
-      uses: tsunematsu21/actions-publish-gh-pages@v1.0.2
+      uses: JamesIves/github-pages-deploy-action@v4
       with:
-        dir: target/scala-3.2.0/scoverage-report
-        branch: gh-pages
-        token: ${{ secrets.GITHUB_TOKEN }}
+        folder: target/scala-3.2.0/scoverage-report
 
     - name: Scaladoc
       run: sbt doc
