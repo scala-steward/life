@@ -24,8 +24,14 @@ jobs:
         distribution: 'temurin'
         cache: 'sbt'
 
+    - name: Compile
+      run: sbt clean compile
+
+    - name: License Header Check
+      run: sbt headerCheck
+
     - name: Test
-      run: sbt clean coverage test
+      run: sbt coverage test
 
     - name: Publish Site
       uses: JamesIves/github-pages-deploy-action@v4
