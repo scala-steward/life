@@ -38,8 +38,9 @@ jobs:
     - name: Publish Coverage
       uses: JamesIves/github-pages-deploy-action@v4
       with:
-        folder: .
+        folder: target/scala-3.2.0/scoverage-report
         target-folder: coverage
+        clean: false
 
 # @Todo: Add this and publish when https://github.com/sbt/sbt/issues/7065 resolved.
 #    - name: Scaladoc
