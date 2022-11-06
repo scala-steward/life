@@ -6,7 +6,7 @@ on:
       - main
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -24,12 +24,6 @@ jobs:
         distribution: 'temurin'
         cache: 'sbt'
 
-    - name: Publish README
-      uses: JamesIves/github-pages-deploy-action@v4
-      with:
-        folder: ./README.md
-        clean: false
-
     - name: Test
       run: sbt clean coverage test
 
@@ -39,9 +33,7 @@ jobs:
     - name: Publish Coverage
       uses: JamesIves/github-pages-deploy-action@v4
       with:
-        folder: target/scala-3.2.0/scoverage-report
-        target-folder: coverage
-        clean: false
+        folder: .
 
 # @Todo: Add this and publish when https://github.com/sbt/sbt/issues/7065 resolved.
 #    - name: Scaladoc
