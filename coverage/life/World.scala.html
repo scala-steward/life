@@ -1,0 +1,2049 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          life/World.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>/*
+</span>2 <span style=''> * Copyright (c) 2022, Nigel Eke
+</span>3 <span style=''> * All rights reserved.
+</span>4 <span style=''> *
+</span>5 <span style=''> * Redistribution and use in source and binary forms, with or without modification,
+</span>6 <span style=''> * are permitted provided that the following conditions are met:
+</span>7 <span style=''> *
+</span>8 <span style=''> * 1. Redistributions of source code must retain the above copyright notice, this
+</span>9 <span style=''> *    list of conditions and the following disclaimer.
+</span>10 <span style=''> *
+</span>11 <span style=''> * 2. Redistributions in binary form must reproduce the above copyright notice,
+</span>12 <span style=''> *    this list of conditions and the following disclaimer in the documentation
+</span>13 <span style=''> *    and/or other materials provided with the distribution.
+</span>14 <span style=''> *
+</span>15 <span style=''> * 3. Neither the name of the copyright holder nor the names of its contributors
+</span>16 <span style=''> *    may be used to endorse or promote products derived from this software without
+</span>17 <span style=''> *    specific prior written permission.
+</span>18 <span style=''> *
+</span>19 <span style=''> * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND
+</span>20 <span style=''> * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+</span>21 <span style=''> * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+</span>22 <span style=''> * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+</span>23 <span style=''> * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+</span>24 <span style=''> * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+</span>25 <span style=''> * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+</span>26 <span style=''> * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+</span>27 <span style=''> * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+</span>28 <span style=''> * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+</span>29 <span style=''> */
+</span>30 <span style=''>
+</span>31 <span style=''>package life
+</span>32 <span style=''>
+</span>33 <span style=''>/** A [World] on which the [Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life) will be played out.
+</span>34 <span style=''>  * @param liveCells
+</span>35 <span style=''>  *   The population of live [Cell]s in the current [World].
+</span>36 <span style=''>  * @param maybeBounds
+</span>37 <span style=''>  *   The optional [Bounds] placed on the current [World]. If provided, the edges of the [World] are void, and any [Cell]s 'born'
+</span>38 <span style=''>  *   into the edge immediately fall off the edge. If not provided then the [Bounds] are endless.
+</span>39 <span style=''>  * @param maybeViewport
+</span>40 <span style=''>  *   The optional [Bounds] for the view of the [World] when displaying. If provided, the [World] is only displayed within the range
+</span>41 <span style=''>  *   of the viewport's rows and columns. If not provided then the full [World] is displayed.
+</span>42 <span style=''>  */
+</span>43 <span style=''>final case class World(liveCells: Cells, maybeBounds: Option[Bounds], maybeViewport: Option[Bounds])
+</span>44 <span style=''>
+</span>45 <span style=''>object World:
+</span>46 <span style=''>  /** Create a [World] with an initial population of [Cell]s. The [World] will have no boundaries, or restricted viewing.
+</span>47 <span style=''>    * @constructor
+</span>48 <span style=''>    * @param cells
+</span>49 <span style=''>    *   The initial population.
+</span>50 <span style=''>    * @return
+</span>51 <span style=''>    *   The created [World].
+</span>52 <span style=''>    */
+</span>53 <span style=''>  </span><span style='background: #AEF1AE'>def withCells</span><span style=''>(cells: Cells) = World(liveCells = cells, None, None)
+</span>54 <span style=''>
+</span>55 <span style=''>extension (w: World)
+</span>56 <span style=''>  </span><span style='background: #AEF1AE'>private def removingOffworlders</span><span style=''>: World =
+</span>57 <span style=''>    </span><span style='background: #AEF1AE'>def withinRange</span><span style=''>(r: Range, i: Int)    = </span><span style='background: #AEF1AE'>r.contains(i)</span><span style=''>
+</span>58 <span style=''>    </span><span style='background: #AEF1AE'>def withinBounds</span><span style=''>(b: Bounds)(c: Cell) = </span><span style='background: #AEF1AE'>withinRange(b.rows, c.row)</span><span style=''> &amp;&amp; </span><span style='background: #AEF1AE'>withinRange(b.columns, c.column)</span><span style=''>
+</span>59 <span style=''>    </span><span style='background: #AEF1AE'>def cellsInBounds</span><span style=''>(b: Bounds)         = </span><span style='background: #AEF1AE'>w.liveCells.filter(withinBounds(b))</span><span style=''>
+</span>60 <span style=''>    </span><span style='background: #AEF1AE'>w.maybeBounds.map(bounds =&gt; w.copy(liveCells = cellsInBounds(bounds))).getOrElse(w)</span><span style=''>
+</span>61 <span style=''>
+</span>62 <span style=''>  /** Restrict the boundaries of the current [World]. Any existing [Cell]s outside those boundaries will fall off the edge of the
+</span>63 <span style=''>    * [World].
+</span>64 <span style=''>    * @param bounds
+</span>65 <span style=''>    *   The new bounds.
+</span>66 <span style=''>    * @return
+</span>67 <span style=''>    *   The [World] with the updated boundary, and cells removed.
+</span>68 <span style=''>    */
+</span>69 <span style=''>  </span><span style='background: #AEF1AE'>def withBounds</span><span style=''>(bounds: Bounds): World = </span><span style='background: #AEF1AE'>w.copy(maybeBounds = Some(bounds)).removingOffworlders</span><span style=''>
+</span>70 <span style=''>
+</span>71 <span style=''>  /** Remove the [World]'s boundaries.
+</span>72 <span style=''>    * @return
+</span>73 <span style=''>    */
+</span>74 <span style=''>  </span><span style='background: #AEF1AE'>def unbounded</span><span style=''>: World = w.copy(maybeBounds = None)
+</span>75 <span style=''>
+</span>76 <span style=''>  /** @return
+</span>77 <span style=''>    *   The [World]'s boundaries. If defined, then that definition will be return. If the [World] is unbounded then the limits of
+</span>78 <span style=''>    *   the existing cells are returned.
+</span>79 <span style=''>    */
+</span>80 <span style=''>  </span><span style='background: #AEF1AE'>def bounds</span><span style=''> =
+</span>81 <span style=''>    lazy val calculatedBounds =
+</span>82 <span style=''>      val </span><span style='background: #AEF1AE'>head :: rest</span><span style=''> = </span><span style='background: #AEF1AE'>w.liveCells.toList</span><span style=''>: @unchecked
+</span>83 <span style=''>      val headBounds   = (head.row, head.row, head.column, head.column)
+</span>84 <span style=''>      </span><span style='background: #AEF1AE'>def updateBounds</span><span style=''>(bounds: (Int, Int, Int, Int), cell: Cell) =
+</span>85 <span style=''>        (
+</span>86 <span style=''>          </span><span style='background: #AEF1AE'>Math.min(bounds._1, cell.row)</span><span style=''>,
+</span>87 <span style=''>          </span><span style='background: #AEF1AE'>Math.max(bounds._2, cell.row)</span><span style=''>,
+</span>88 <span style=''>          </span><span style='background: #AEF1AE'>Math.min(bounds._3, cell.column)</span><span style=''>,
+</span>89 <span style=''>          </span><span style='background: #AEF1AE'>Math.max(bounds._4, cell.column)</span><span style=''>
+</span>90 <span style=''>        )
+</span>91 <span style=''>      val </span><span style='background: #AEF1AE'>(minRow, maxRow, minColumn, maxColumn)</span><span style=''> = </span><span style='background: #AEF1AE'>rest.foldLeft(headBounds)(updateBounds)</span><span style=''>
+</span>92 <span style=''>      Bounds(</span><span style='background: #AEF1AE'>minRow to maxRow</span><span style=''>, </span><span style='background: #AEF1AE'>minColumn to maxColumn</span><span style=''>)
+</span>93 <span style=''>    </span><span style='background: #AEF1AE'>w.maybeBounds.getOrElse(calculatedBounds)</span><span style=''>
+</span>94 <span style=''>
+</span>95 <span style=''>  /** Set the current viewport for displaying.
+</span>96 <span style=''>    * @param viewport
+</span>97 <span style=''>    *   The new viewport.
+</span>98 <span style=''>    * @return
+</span>99 <span style=''>    *   The updated [World] with the new viewport.
+</span>100 <span style=''>    */
+</span>101 <span style=''>  </span><span style='background: #AEF1AE'>def withViewport</span><span style=''>(viewport: Bounds): World = w.copy(maybeViewport = Some(viewport))
+</span>102 <span style=''>
+</span>103 <span style=''>  /** Clear any pre-defined viewport. The whole [World] will be viewed when displaying.
+</span>104 <span style=''>    * @return
+</span>105 <span style=''>    *   The updated [World] with any existing viewport removed.
+</span>106 <span style=''>    */
+</span>107 <span style=''>  </span><span style='background: #AEF1AE'>def withoutViewport</span><span style=''>: World = w.copy(maybeViewport = None)
+</span>108 <span style=''>
+</span>109 <span style=''>  /** Add some additional [Cells] to the current [World].
+</span>110 <span style=''>    * @param cells
+</span>111 <span style=''>    *   The [Cells] to be added.
+</span>112 <span style=''>    * @param row
+</span>113 <span style=''>    *   The row offset in the current [World] where the new [Cells] will be added.
+</span>114 <span style=''>    * @param column
+</span>115 <span style=''>    *   The column offset in the current [World] where the new [Cells] will be added.
+</span>116 <span style=''>    * @return
+</span>117 <span style=''>    *   The [World] with the additional [Cells].
+</span>118 <span style=''>    */
+</span>119 <span style=''>  </span><span style='background: #AEF1AE'>def withCells</span><span style=''>(cells: Cells, row: Int, column: Int): World =
+</span>120 <span style=''>    val offsetCells = </span><span style='background: #AEF1AE'>cells.map(c =&gt; Cell(c.row + row, c.column + column))</span><span style=''>
+</span>121 <span style=''>    </span><span style='background: #AEF1AE'>w.copy(liveCells = w.liveCells ++ offsetCells).removingOffworlders</span><span style=''>
+</span>122 <span style=''>
+</span>123 <span style=''>  </span><span style='background: #AEF1AE'>private def isLive</span><span style=''>(c: Cell): Boolean = </span><span style='background: #AEF1AE'>w.liveCells.contains(c)</span><span style=''>
+</span>124 <span style=''>
+</span>125 <span style=''>  </span><span style='background: #AEF1AE'>private def neighboursCount</span><span style=''>(c: Cell): Int = </span><span style='background: #AEF1AE'>c.neighbouringCells.count(isLive)</span><span style=''>
+</span>126 <span style=''>
+</span>127 <span style=''>  /** @return
+</span>128 <span style=''>    *   The next generation of the [World], using the rules of life.
+</span>129 <span style=''>    */
+</span>130 <span style=''>  </span><span style='background: #AEF1AE'>def nextGeneration</span><span style=''>: World =
+</span>131 <span style=''>    val allNeighbours   = </span><span style='background: #AEF1AE'>w.liveCells.map(_.neighbouringCells).flatten</span><span style=''>
+</span>132 <span style=''>    val allCells        = </span><span style='background: #AEF1AE'>w.liveCells ++ allNeighbours</span><span style=''>
+</span>133 <span style=''>    val neighbourCounts = </span><span style='background: #AEF1AE'>allCells.map(c =&gt; (c, w.neighboursCount(c)))</span><span style=''>
+</span>134 <span style=''>    val dyingCells      = </span><span style='background: #AEF1AE'>neighbourCounts.filter((_, count) =&gt; count &lt; 2 || count &gt; 3).map(_._1)</span><span style=''>
+</span>135 <span style=''>    val bornCells       = </span><span style='background: #AEF1AE'>neighbourCounts.filter((_, count) =&gt; count == 3).map(_._1)</span><span style=''>
+</span>136 <span style=''>    </span><span style='background: #AEF1AE'>w.copy(liveCells = w.liveCells -- dyingCells ++ bornCells).removingOffworlders</span><span style=''>
+</span>137 <span style=''>
+</span>138 <span style=''>  /** @return
+</span>139 <span style=''>    *   A pretty string to aid debug &amp; testing primarily.
+</span>140 <span style=''>    */
+</span>141 <span style=''>  </span><span style='background: #AEF1AE'>def prettified</span><span style=''>: String =
+</span>142 <span style=''>    val bounds = </span><span style='background: #AEF1AE'>w.maybeViewport.getOrElse(w.bounds)</span><span style=''>
+</span>143 <span style=''>    </span><span style='background: #AEF1AE'>def rowString</span><span style=''>(r: Int): String =
+</span>144 <span style=''>      </span><span style='background: #AEF1AE'>(for
+</span>145 <span style=''></span><span style='background: #AEF1AE'>        c &lt;- bounds.columns
+</span>146 <span style=''></span><span style='background: #AEF1AE'>        cellChar = if w.isLive(Cell(r, c)) then &quot;* &quot; else &quot;  &quot;
+</span>147 <span style=''></span><span style='background: #AEF1AE'>      yield cellChar).mkString</span><span style=''>
+</span>148 <span style=''>    </span><span style='background: #AEF1AE'>(for r &lt;- bounds.rows
+</span>149 <span style=''></span><span style='background: #AEF1AE'>    yield rowString(r)).mkString(&quot;\n&quot;)</span><span style=''>
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Tests</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          166
+        </td>
+        <td>
+          2660
+          -
+          2673
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          withCells
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def withCells
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          178
+        </td>
+        <td>
+          2751
+          -
+          2782
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          removingOffworlders
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          private def removingOffworlders
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          167
+        </td>
+        <td>
+          2835
+          -
+          2848
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          contains
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          r.contains(i)
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          168
+        </td>
+        <td>
+          2796
+          -
+          2811
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          withinRange
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def withinRange
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          169
+        </td>
+        <td>
+          2892
+          -
+          2918
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          withinRange
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          withinRange(b.rows, c.row)
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          171
+        </td>
+        <td>
+          2853
+          -
+          2869
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          withinBounds
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def withinBounds
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          170
+        </td>
+        <td>
+          2922
+          -
+          2954
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          withinRange
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          withinRange(b.columns, c.column)
+        </td>
+      </tr><tr>
+        <td>
+          58
+        </td>
+        <td>
+          173
+        </td>
+        <td>
+          2998
+          -
+          3033
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          filter
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          w.liveCells.filter(withinBounds(b))
+        </td>
+      </tr><tr>
+        <td>
+          58
+        </td>
+        <td>
+          172
+        </td>
+        <td>
+          3017
+          -
+          3032
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          withinBounds
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          withinBounds(b)
+        </td>
+      </tr><tr>
+        <td>
+          58
+        </td>
+        <td>
+          174
+        </td>
+        <td>
+          2959
+          -
+          2976
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          cellsInBounds
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def cellsInBounds
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          176
+        </td>
+        <td>
+          3038
+          -
+          3108
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          w.maybeBounds.map(bounds =&gt; w.copy(liveCells = cellsInBounds(bounds)))
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          175
+        </td>
+        <td>
+          3085
+          -
+          3106
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          cellsInBounds
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          cellsInBounds(bounds)
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          177
+        </td>
+        <td>
+          3038
+          -
+          3121
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          getOrElse
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          w.maybeBounds.map(bounds =&gt; w.copy(liveCells = cellsInBounds(bounds))).getOrElse(w)
+        </td>
+      </tr><tr>
+        <td>
+          68
+        </td>
+        <td>
+          180
+        </td>
+        <td>
+          3401
+          -
+          3415
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          withBounds
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def withBounds
+        </td>
+      </tr><tr>
+        <td>
+          68
+        </td>
+        <td>
+          179
+        </td>
+        <td>
+          3441
+          -
+          3495
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          removingOffworlders
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          w.copy(maybeBounds = Some(bounds)).removingOffworlders
+        </td>
+      </tr><tr>
+        <td>
+          73
+        </td>
+        <td>
+          181
+        </td>
+        <td>
+          3559
+          -
+          3572
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          unbounded
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def unbounded
+        </td>
+      </tr><tr>
+        <td>
+          79
+        </td>
+        <td>
+          201
+        </td>
+        <td>
+          3804
+          -
+          3814
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          bounds
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def bounds
+        </td>
+      </tr><tr>
+        <td>
+          81
+        </td>
+        <td>
+          182
+        </td>
+        <td>
+          3874
+          -
+          3892
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          toList
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          w.liveCells.toList
+        </td>
+      </tr><tr>
+        <td>
+          81
+        </td>
+        <td>
+          183
+        </td>
+        <td>
+          3859
+          -
+          3871
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          head :: rest
+        </td>
+      </tr><tr>
+        <td>
+          83
+        </td>
+        <td>
+          192
+        </td>
+        <td>
+          3983
+          -
+          3999
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          updateBounds
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def updateBounds
+        </td>
+      </tr><tr>
+        <td>
+          85
+        </td>
+        <td>
+          185
+        </td>
+        <td>
+          4064
+          -
+          4093
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          min
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Math.min(bounds._1, cell.row)
+        </td>
+      </tr><tr>
+        <td>
+          85
+        </td>
+        <td>
+          184
+        </td>
+        <td>
+          4073
+          -
+          4082
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          _1
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          bounds._1
+        </td>
+      </tr><tr>
+        <td>
+          86
+        </td>
+        <td>
+          187
+        </td>
+        <td>
+          4105
+          -
+          4134
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          max
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Math.max(bounds._2, cell.row)
+        </td>
+      </tr><tr>
+        <td>
+          86
+        </td>
+        <td>
+          186
+        </td>
+        <td>
+          4114
+          -
+          4123
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          _2
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          bounds._2
+        </td>
+      </tr><tr>
+        <td>
+          87
+        </td>
+        <td>
+          189
+        </td>
+        <td>
+          4146
+          -
+          4178
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          min
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Math.min(bounds._3, cell.column)
+        </td>
+      </tr><tr>
+        <td>
+          87
+        </td>
+        <td>
+          188
+        </td>
+        <td>
+          4155
+          -
+          4164
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          _3
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          bounds._3
+        </td>
+      </tr><tr>
+        <td>
+          88
+        </td>
+        <td>
+          191
+        </td>
+        <td>
+          4190
+          -
+          4222
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          max
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Math.max(bounds._4, cell.column)
+        </td>
+      </tr><tr>
+        <td>
+          88
+        </td>
+        <td>
+          190
+        </td>
+        <td>
+          4199
+          -
+          4208
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          _4
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          bounds._4
+        </td>
+      </tr><tr>
+        <td>
+          90
+        </td>
+        <td>
+          194
+        </td>
+        <td>
+          4284
+          -
+          4323
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          foldLeft
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          rest.foldLeft(headBounds)(updateBounds)
+        </td>
+      </tr><tr>
+        <td>
+          90
+        </td>
+        <td>
+          193
+        </td>
+        <td>
+          4310
+          -
+          4322
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          updateBounds
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          updateBounds
+        </td>
+      </tr><tr>
+        <td>
+          90
+        </td>
+        <td>
+          195
+        </td>
+        <td>
+          4243
+          -
+          4281
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          (minRow, maxRow, minColumn, maxColumn)
+        </td>
+      </tr><tr>
+        <td>
+          91
+        </td>
+        <td>
+          196
+        </td>
+        <td>
+          4337
+          -
+          4343
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          intWrapper
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          minRow
+        </td>
+      </tr><tr>
+        <td>
+          91
+        </td>
+        <td>
+          199
+        </td>
+        <td>
+          4355
+          -
+          4377
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          to
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          minColumn to maxColumn
+        </td>
+      </tr><tr>
+        <td>
+          91
+        </td>
+        <td>
+          198
+        </td>
+        <td>
+          4355
+          -
+          4364
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          intWrapper
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          minColumn
+        </td>
+      </tr><tr>
+        <td>
+          91
+        </td>
+        <td>
+          197
+        </td>
+        <td>
+          4337
+          -
+          4353
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          to
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          minRow to maxRow
+        </td>
+      </tr><tr>
+        <td>
+          92
+        </td>
+        <td>
+          200
+        </td>
+        <td>
+          4383
+          -
+          4424
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          getOrElse
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          w.maybeBounds.getOrElse(calculatedBounds)
+        </td>
+      </tr><tr>
+        <td>
+          100
+        </td>
+        <td>
+          202
+        </td>
+        <td>
+          4595
+          -
+          4611
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          withViewport
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def withViewport
+        </td>
+      </tr><tr>
+        <td>
+          106
+        </td>
+        <td>
+          203
+        </td>
+        <td>
+          4854
+          -
+          4873
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          withoutViewport
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def withoutViewport
+        </td>
+      </tr><tr>
+        <td>
+          118
+        </td>
+        <td>
+          207
+        </td>
+        <td>
+          5301
+          -
+          5314
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          withCells
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def withCells
+        </td>
+      </tr><tr>
+        <td>
+          119
+        </td>
+        <td>
+          204
+        </td>
+        <td>
+          5383
+          -
+          5435
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          cells.map(c =&gt; Cell(c.row + row, c.column + column))
+        </td>
+      </tr><tr>
+        <td>
+          120
+        </td>
+        <td>
+          205
+        </td>
+        <td>
+          5459
+          -
+          5485
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          ++
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          w.liveCells ++ offsetCells
+        </td>
+      </tr><tr>
+        <td>
+          120
+        </td>
+        <td>
+          206
+        </td>
+        <td>
+          5440
+          -
+          5506
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          removingOffworlders
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          w.copy(liveCells = w.liveCells ++ offsetCells).removingOffworlders
+        </td>
+      </tr><tr>
+        <td>
+          122
+        </td>
+        <td>
+          209
+        </td>
+        <td>
+          5510
+          -
+          5528
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          isLive
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          private def isLive
+        </td>
+      </tr><tr>
+        <td>
+          122
+        </td>
+        <td>
+          208
+        </td>
+        <td>
+          5549
+          -
+          5572
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          contains
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          w.liveCells.contains(c)
+        </td>
+      </tr><tr>
+        <td>
+          124
+        </td>
+        <td>
+          211
+        </td>
+        <td>
+          5646
+          -
+          5652
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          isLive
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          isLive
+        </td>
+      </tr><tr>
+        <td>
+          124
+        </td>
+        <td>
+          210
+        </td>
+        <td>
+          5620
+          -
+          5639
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          neighbouringCells
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          c.neighbouringCells
+        </td>
+      </tr><tr>
+        <td>
+          124
+        </td>
+        <td>
+          213
+        </td>
+        <td>
+          5576
+          -
+          5603
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          neighboursCount
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          private def neighboursCount
+        </td>
+      </tr><tr>
+        <td>
+          124
+        </td>
+        <td>
+          212
+        </td>
+        <td>
+          5620
+          -
+          5653
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          count
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          c.neighbouringCells.count(isLive)
+        </td>
+      </tr><tr>
+        <td>
+          129
+        </td>
+        <td>
+          229
+        </td>
+        <td>
+          5747
+          -
+          5765
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          nextGeneration
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def nextGeneration
+        </td>
+      </tr><tr>
+        <td>
+          130
+        </td>
+        <td>
+          214
+        </td>
+        <td>
+          5817
+          -
+          5836
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          neighbouringCells
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _.neighbouringCells
+        </td>
+      </tr><tr>
+        <td>
+          130
+        </td>
+        <td>
+          216
+        </td>
+        <td>
+          5801
+          -
+          5845
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          flatten
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          w.liveCells.map(_.neighbouringCells).flatten
+        </td>
+      </tr><tr>
+        <td>
+          130
+        </td>
+        <td>
+          215
+        </td>
+        <td>
+          5801
+          -
+          5837
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          w.liveCells.map(_.neighbouringCells)
+        </td>
+      </tr><tr>
+        <td>
+          131
+        </td>
+        <td>
+          217
+        </td>
+        <td>
+          5872
+          -
+          5900
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          ++
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          w.liveCells ++ allNeighbours
+        </td>
+      </tr><tr>
+        <td>
+          132
+        </td>
+        <td>
+          218
+        </td>
+        <td>
+          5949
+          -
+          5969
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          neighboursCount
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          w.neighboursCount(c)
+        </td>
+      </tr><tr>
+        <td>
+          132
+        </td>
+        <td>
+          219
+        </td>
+        <td>
+          5927
+          -
+          5971
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          allCells.map(c =&gt; (c, w.neighboursCount(c)))
+        </td>
+      </tr><tr>
+        <td>
+          133
+        </td>
+        <td>
+          220
+        </td>
+        <td>
+          5998
+          -
+          6058
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          filter
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          neighbourCounts.filter((_, count) =&gt; count &lt; 2 || count &gt; 3)
+        </td>
+      </tr><tr>
+        <td>
+          133
+        </td>
+        <td>
+          222
+        </td>
+        <td>
+          5998
+          -
+          6068
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          neighbourCounts.filter((_, count) =&gt; count &lt; 2 || count &gt; 3).map(_._1)
+        </td>
+      </tr><tr>
+        <td>
+          133
+        </td>
+        <td>
+          221
+        </td>
+        <td>
+          6063
+          -
+          6067
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          _1
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _._1
+        </td>
+      </tr><tr>
+        <td>
+          134
+        </td>
+        <td>
+          223
+        </td>
+        <td>
+          6095
+          -
+          6143
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          filter
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          neighbourCounts.filter((_, count) =&gt; count == 3)
+        </td>
+      </tr><tr>
+        <td>
+          134
+        </td>
+        <td>
+          225
+        </td>
+        <td>
+          6095
+          -
+          6153
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          neighbourCounts.filter((_, count) =&gt; count == 3).map(_._1)
+        </td>
+      </tr><tr>
+        <td>
+          134
+        </td>
+        <td>
+          224
+        </td>
+        <td>
+          6148
+          -
+          6152
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          _1
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _._1
+        </td>
+      </tr><tr>
+        <td>
+          135
+        </td>
+        <td>
+          227
+        </td>
+        <td>
+          6177
+          -
+          6215
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          ++
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          w.liveCells -- dyingCells ++ bornCells
+        </td>
+      </tr><tr>
+        <td>
+          135
+        </td>
+        <td>
+          226
+        </td>
+        <td>
+          6177
+          -
+          6202
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          --
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          w.liveCells -- dyingCells
+        </td>
+      </tr><tr>
+        <td>
+          135
+        </td>
+        <td>
+          228
+        </td>
+        <td>
+          6158
+          -
+          6236
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          removingOffworlders
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          w.copy(liveCells = w.liveCells -- dyingCells ++ bornCells).removingOffworlders
+        </td>
+      </tr><tr>
+        <td>
+          140
+        </td>
+        <td>
+          242
+        </td>
+        <td>
+          6319
+          -
+          6333
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          prettified
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def prettified
+        </td>
+      </tr><tr>
+        <td>
+          141
+        </td>
+        <td>
+          230
+        </td>
+        <td>
+          6361
+          -
+          6396
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          getOrElse
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          w.maybeViewport.getOrElse(w.bounds)
+        </td>
+      </tr><tr>
+        <td>
+          142
+        </td>
+        <td>
+          238
+        </td>
+        <td>
+          6401
+          -
+          6414
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          rowString
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def rowString
+        </td>
+      </tr><tr>
+        <td>
+          143
+        </td>
+        <td>
+          236
+        </td>
+        <td>
+          6440
+          -
+          6555
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          for
+        c &lt;- bounds.columns
+        cellChar = if w.isLive(Cell(r, c)) then &quot;* &quot; else &quot;  &quot;
+      yield cellChar
+        </td>
+      </tr><tr>
+        <td>
+          144
+        </td>
+        <td>
+          235
+        </td>
+        <td>
+          6452
+          -
+          6488
+        </td>
+        <td>
+          Typed
+        </td>
+        <td>
+          cellChar
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          c &lt;- bounds.columns
+        cellChar
+        </td>
+      </tr><tr>
+        <td>
+          144
+        </td>
+        <td>
+          234
+        </td>
+        <td>
+          6452
+          -
+          6534
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          c &lt;- bounds.columns
+        cellChar = if w.isLive(Cell(r, c)) then &quot;* &quot; else &quot;  &quot;
+        </td>
+      </tr><tr>
+        <td>
+          145
+        </td>
+        <td>
+          232
+        </td>
+        <td>
+          6520
+          -
+          6524
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;* &quot;
+        </td>
+      </tr><tr>
+        <td>
+          145
+        </td>
+        <td>
+          231
+        </td>
+        <td>
+          6494
+          -
+          6514
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          isLive
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          w.isLive(Cell(r, c))
+        </td>
+      </tr><tr>
+        <td>
+          145
+        </td>
+        <td>
+          233
+        </td>
+        <td>
+          6530
+          -
+          6534
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;  &quot;
+        </td>
+      </tr><tr>
+        <td>
+          146
+        </td>
+        <td>
+          237
+        </td>
+        <td>
+          6439
+          -
+          6565
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          mkString
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          (for
+        c &lt;- bounds.columns
+        cellChar = if w.isLive(Cell(r, c)) then &quot;* &quot; else &quot;  &quot;
+      yield cellChar).mkString
+        </td>
+      </tr><tr>
+        <td>
+          147
+        </td>
+        <td>
+          240
+        </td>
+        <td>
+          6571
+          -
+          6614
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          for r &lt;- bounds.rows
+    yield rowString(r)
+        </td>
+      </tr><tr>
+        <td>
+          148
+        </td>
+        <td>
+          241
+        </td>
+        <td>
+          6570
+          -
+          6630
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          mkString
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          (for r &lt;- bounds.rows
+    yield rowString(r)).mkString(&quot;\n&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          148
+        </td>
+        <td>
+          239
+        </td>
+        <td>
+          6602
+          -
+          6614
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          rowString
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          rowString(r)
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>
