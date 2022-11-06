@@ -11,10 +11,10 @@ publish / skip := true
 import ReleaseTransformations._
 
 releaseProcess := Seq[ReleaseStep](
-//  checkSnapshotDependencies, // : ReleaseStep
-//  inquireVersions,           // : ReleaseStep
-//  runClean,                  // : ReleaseStep
-//  runTest,                   // : ReleaseStep
+  checkSnapshotDependencies, // : ReleaseStep
+  inquireVersions,           // : ReleaseStep
+  runClean,                  // : ReleaseStep
+  runTest                    // : ReleaseStep
 //  setReleaseVersion,         // : ReleaseStep
 //  commitReleaseVersion,      // : ReleaseStep, performs the initial git checks
 //  tagRelease,                // : ReleaseStep
