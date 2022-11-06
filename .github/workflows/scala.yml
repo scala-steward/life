@@ -38,6 +38,8 @@ jobs:
       uses: JamesIves/github-pages-deploy-action@v4
       with:
         folder: target/scala-3.2.0/scoverage-report
+        repository-name: nigeleke.github.io
+        token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Scaladoc
       run: sbt doc
