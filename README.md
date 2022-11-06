@@ -9,5 +9,5 @@ A [Scala](https://scala-lang.org/) implementation of [Conway's Game of Life](htt
 ## Documentation
 
   * [GitHub](https://github.com/nigeleke/life)
-  * [API](target/api/index.html)
-  * [Coverage Report](target/scala-3.2.0/scoverage-report/index.html)
+  * [API](api/index.html)
+  * [Coverage Report](coverage/index.html)
