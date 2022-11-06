@@ -27,6 +27,11 @@ jobs:
     - name: Test
       run: sbt clean coverage test
 
+    - name: Publish Site
+      uses: JamesIves/github-pages-deploy-action@v4
+      with:
+        folder: .
+
     - name: Coverage
       run: sbt coverageReport
 
@@ -34,6 +39,7 @@ jobs:
       uses: JamesIves/github-pages-deploy-action@v4
       with:
         folder: .
+        target-folder: coverage
 
 # @Todo: Add this and publish when https://github.com/sbt/sbt/issues/7065 resolved.
 #    - name: Scaladoc
