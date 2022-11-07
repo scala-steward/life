@@ -1,4 +1,4 @@
-val scala3Version = "3.2.0"
+val scala3Version = "3.2.1"
 
 organizationName := "Nigel Eke"
 startYear        := Some(2022)
