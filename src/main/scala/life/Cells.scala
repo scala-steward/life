@@ -88,3 +88,37 @@ object Cells:
     Try(fromFilenameEx(filename)) match
       case Success(cells) => Right[Error, Cells](cells)
       case Failure(error) => Left[Error, Cells](error.getMessage)
+
+extension (cells: Cells)
+  def bounds: Bounds =
+    val head :: rest = cells.toList: @unchecked
+    val headBounds   = (head.row, head.row, head.column, head.column)
+
+    def updateBounds(bounds: (Int, Int, Int, Int), cell: Cell) =
+      (
+        Math.min(bounds._1, cell.row),
+        Math.max(bounds._2, cell.row),
+        Math.min(bounds._3, cell.column),
+        Math.max(bounds._4, cell.column)
+      )
+
+    val (minRow, maxRow, minColumn, maxColumn) = rest.foldLeft(headBounds)(updateBounds)
+    Bounds(minRow to maxRow, minColumn to maxColumn)
+
+  def rotate(n: Int) =
+    val realN = if n >= 0 then n % 4 else (4 + n % 4) % 4
+    val bounds = cells.bounds
+    val source = for
+      sourceRow    <- bounds.rows
+      sourceColumn <- bounds.columns
+    yield Cell(sourceRow, sourceColumn)
+
+    val targets = Array(
+      source,
+      for (targetColumn <- bounds.rows.reverse; targetRow <- bounds.columns) yield Cell(targetRow, targetColumn),
+      for (targetRow <- bounds.rows.reverse; targetColumn <- bounds.columns.reverse) yield Cell(targetRow, targetColumn),
+      for (targetColumn <- bounds.rows; targetRow <- bounds.columns.reverse) yield Cell(targetRow, targetColumn)
+    )
+
+    val mapping = source.zip(targets(realN)).toMap
+    cells.map(mapping)

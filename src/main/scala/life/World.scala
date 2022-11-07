@@ -73,25 +73,6 @@ extension (w: World)
     */
   def unbounded: World = w.copy(maybeBounds = None)
 
-  /** @return
-    *   The [World]'s boundaries. If defined, then that definition will be return. If the [World] is unbounded then the limits of
-    *   the existing cells are returned.
-    */
-  def bounds =
-    lazy val calculatedBounds =
-      val head :: rest = w.liveCells.toList: @unchecked
-      val headBounds   = (head.row, head.row, head.column, head.column)
-      def updateBounds(bounds: (Int, Int, Int, Int), cell: Cell) =
-        (
-          Math.min(bounds._1, cell.row),
-          Math.max(bounds._2, cell.row),
-          Math.min(bounds._3, cell.column),
-          Math.max(bounds._4, cell.column)
-        )
-      val (minRow, maxRow, minColumn, maxColumn) = rest.foldLeft(headBounds)(updateBounds)
-      Bounds(minRow to maxRow, minColumn to maxColumn)
-    w.maybeBounds.getOrElse(calculatedBounds)
-
   /** Set the current viewport for displaying.
     * @param viewport
     *   The new viewport.
@@ -139,7 +120,7 @@ extension (w: World)
     *   A pretty string to aid debug & testing primarily.
     */
   def prettified: String =
-    val bounds = w.maybeViewport.getOrElse(w.bounds)
+    val bounds = w.maybeViewport.getOrElse(w.maybeBounds.getOrElse(w.liveCells.bounds))
     def rowString(r: Int): String =
       (for
         c <- bounds.columns

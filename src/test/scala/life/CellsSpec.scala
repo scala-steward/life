@@ -1,12 +1,14 @@
 package life
 
+import org.scalacheck.Gen
 import org.scalatest.*
 import org.scalatest.matchers.should.*
 import org.scalatest.wordspec.*
+import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
 import scala.io.*
 
-class CellsSpec extends AnyWordSpec with Matchers:
+class CellsSpec extends AnyWordSpec with ScalaCheckPropertyChecks with Matchers:
 
   "Cells" should {
     "be creatable" when {
@@ -77,6 +79,67 @@ class CellsSpec extends AnyWordSpec with Matchers:
         Cells.fromFilename(filename) match
           case Left(text)   => text should be("requirement failed: Inconsistent row lengths List(3, 2, 1)")
           case Right(cells) => fail(s"Unexpected cells ${cells.toString}")
+      }
+    }
+
+    "rotate" when {
+      val cellsOrError = Cells.fromText("""
+          |* * * *
+          |. . * *
+          |. . . *
+          |""".stripMargin)
+
+      "0 degrees" in {
+        for
+          cells <- cellsOrError
+          expectedCells <- Cells.fromText("""
+              |* * * *
+              |. . * *
+              |. . . *
+              |""".stripMargin)
+        yield cells.rotate(0) should be(expectedCells)
+      }
+
+      "90 degrees" in {
+        for
+          cells <- cellsOrError
+          expectedCells <- Cells.fromText("""
+              |. . *
+              |. . *
+              |. * *
+              |* * *
+              |""".stripMargin)
+        yield cells.rotate(1) should be(expectedCells)
+      }
+
+      "180 degrees" in {
+        for
+          cells <- cellsOrError
+          expectedCells <- Cells.fromText("""
+              |* . . .
+              |* * . .
+              |* * * *
+              |""".stripMargin)
+        yield cells.rotate(2) should be(expectedCells)
+      }
+
+      "270 degrees" in {
+        for
+          cells <- cellsOrError
+          expectedCells <- Cells.fromText("""
+              |* * *
+              |* * .
+              |* . .
+              |* . .
+              |""".stripMargin)
+        yield cells.rotate(3) should be(expectedCells)
+      }
+
+      "arbitary number of 90 degree rotations" in {
+        forAll(Gen.chooseNum(-100, 100)) { n =>
+          for cells <- cellsOrError
+          yield cells.rotate(n) should be(a[Cells])
+        }
       }
     }
   }

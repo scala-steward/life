@@ -24,7 +24,7 @@ class WorldSpec extends AnyWordSpec with Matchers:
           |""".stripMargin)
         yield
           val world = World.withCells(cells).withBounds(bounds)
-          world.bounds should be(bounds)
+          world.maybeBounds should be(Some(bounds))
       }
 
       "restrictive" in {
