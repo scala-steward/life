@@ -2,12 +2,9 @@ name: Acceptance Cycle
 
 on:
   workflow_run:
-    workflows: ["Commit Cycle"]
+    workflows: [Commit Cycle]
     types: [completed]
     branches: [develop]
-
-permissions:
-  contents: write
 
 jobs:
   acceptance:
