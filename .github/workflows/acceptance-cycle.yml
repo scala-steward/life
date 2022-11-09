@@ -1,9 +1,10 @@
-name: Build
+name: Acceptance Cycle
 
 on:
-  push:
-    branches:
-      - main
+  workfloe_run:
+    workflows: ["Commit Cycle"]
+    types:
+      - completed
 
 permissions:
   contents: write
@@ -32,20 +33,17 @@ jobs:
       - name: Test
         run: sbt coverage test
 
-      - name: Publish Site
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          folder: .
-
-      - name: Coverage
+      - name: Coverage Report
         run: sbt coverageReport
 
-      - name: Publish Coverage
-        uses: JamesIves/github-pages-deploy-action@v4
+      - name: Coverage
+        id: coverage
+        uses: mavrosxristoforos/get-xml-info@1.0
         with:
-          folder: target/scala-3.2.1/scoverage-report
-          target-folder: coverage
-          clean: false
-# @Todo: Add this and publish when https://github.com/sbt/sbt/issues/7065 resolved.
-#    - name: Scaladoc
-#      run: sbt doc
+          xml-file: 'target/scala-3.2.1/scoverge.xml'
+          xpath: '(/scoverage[@statement-rate] + /scoverage[@branch-rate])/2'
+
+      - name: Echo
+        run: |
+          echo ${{steps.coverage.outputs.info}}
+          echo ${{steps.coverage.outputs}}

@@ -4,4 +4,4 @@ package life
   * @param row
   * @param column
   */
-case class Position(row: Int, column: Int)
+final case class Position(row: Int, column: Int)

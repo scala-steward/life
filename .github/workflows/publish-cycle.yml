@@ -1,0 +1,52 @@
+name: Publish Cycle
+
+on:
+  workfloe_run:
+    workflows: ["Acceptance Cycle"]
+    types:
+      - completed
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: "17"
+          distribution: "temurin"
+          cache: "sbt"
+
+      - name: Compile
+        run: sbt clean compile
+
+      - name: License Header Check
+        run: sbt headerCheck
+
+      - name: Test
+        run: sbt coverage test
+
+      - name: Publish Site
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: .
+
+      - name: Coverage
+        run: sbt coverageReport
+
+      - name: Publish Coverage
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: target/scala-3.2.1/scoverage-report
+          target-folder: coverage
+          clean: false
+# @Todo: Add this and publish when https://github.com/sbt/sbt/issues/7065 resolved.
+#    - name: Scaladoc
+#      run: sbt doc
