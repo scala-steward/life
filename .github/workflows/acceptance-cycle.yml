@@ -9,44 +9,44 @@ on:
 jobs:
   acceptance:
     runs-on: ubuntu-latest
-#    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
-#      - name: JDK
-#        uses: actions/setup-java@v3
-#        with:
-#          java-version: "17"
-#          distribution: "temurin"
-#          cache: "sbt"
-#
-#      - name: Compile
-#        run: sbt clean compile
-#
-#      - name: License Header Check
-#        run: sbt headerCheck
-#
-#      - name: Test
-#        run: sbt coverage test
-#
-#      - name: Publish Check
-#        run: |
-#          sbt publishLocal
-#          sbt publishM2
-#
-#      - name: Coverage Report
-#        run: sbt coverageReport
-#
-##      - name: Coverage
-##        id: coverage
-##        uses: mavrosxristoforos/get-xml-info@1.0
-##        with:
-##          xml-file: 'target/scala-3.2.1/scoverge.xml'
-##          xpath: '(/scoverage[@statement-rate] + /scoverage[@branch-rate]) / 2'
-##
-##      - name: Echo
-##        run: |
-##          echo ${{steps.coverage.outputs.info}}
-##          echo ${{steps.coverage.outputs}}
+      - name: JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: "17"
+          distribution: "temurin"
+          cache: "sbt"
+
+      - name: Compile
+        run: sbt clean compile
+
+      - name: License Header Check
+        run: sbt headerCheck
+
+      - name: Test
+        run: sbt coverage test
+
+      - name: Publish Check
+        run: |
+          sbt publishLocal
+          sbt publishM2
+
+      - name: Coverage Report
+        run: sbt coverageReport
+
+      - name: Coverage
+        id: coverage
+        uses: mavrosxristoforos/get-xml-info@1.0
+        with:
+          xml-file: 'target/scala-3.2.1/scoverge.xml'
+          xpath: '(/scoverage[@statement-rate] + /scoverage[@branch-rate]) / 2'
+
+      - name: Echo
+        run: |
+          echo ${{steps.coverage.outputs.info}}
+          echo ${{steps.coverage.outputs}}
