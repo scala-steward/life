@@ -9,7 +9,7 @@ on:
 jobs:
   acceptance:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+#    if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
       - name: Checkout
@@ -31,17 +31,20 @@ jobs:
       - name: Test
         run: sbt coverage test
 
+      - name: Publishability
+        run: sbt publishLocal
+
       - name: Coverage Report
         run: sbt coverageReport
 
-      - name: Coverage
-        id: coverage
-        uses: mavrosxristoforos/get-xml-info@1.0
-        with:
-          xml-file: 'target/scala-3.2.1/scoverge.xml'
-          xpath: '(/scoverage[@statement-rate] + /scoverage[@branch-rate])/2'
-
-      - name: Echo
-        run: |
-          echo ${{steps.coverage.outputs.info}}
-          echo ${{steps.coverage.outputs}}
+#      - name: Coverage
+#        id: coverage
+#        uses: mavrosxristoforos/get-xml-info@1.0
+#        with:
+#          xml-file: 'target/scala-3.2.1/scoverge.xml'
+#          xpath: '(/scoverage[@statement-rate] + /scoverage[@branch-rate]) / 2'
+#
+#      - name: Echo
+#        run: |
+#          echo ${{steps.coverage.outputs.info}}
+#          echo ${{steps.coverage.outputs}}
