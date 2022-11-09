@@ -79,7 +79,7 @@ class WorldSpec extends AnyWordSpec with Matchers:
               |. . . . * .
               |""".stripMargin)
         yield
-          val world = World.withCells(initialCells).withCells(additionalCells, 1, 3)
+          val world = World.withCells(initialCells).withCells(additionalCells, Position(1, 3))
           world.liveCells should be(expectedCells)
       }
 
@@ -102,7 +102,7 @@ class WorldSpec extends AnyWordSpec with Matchers:
             |. * . * .
             |""".stripMargin)
         yield
-          val world = World.withCells(initialCells).withBounds(bounds).withCells(additionalCells, 1, 3)
+          val world = World.withCells(initialCells).withBounds(bounds).withCells(additionalCells, Position(1, 3))
           world.liveCells should contain theSameElementsAs (expectedCells)
       }
     }

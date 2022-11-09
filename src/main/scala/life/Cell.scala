@@ -39,12 +39,16 @@ package life
 final case class Cell(row: Int, column: Int)
 
 extension (cell: Cell)
+
+  /** Translate the [Cell] by the [Position]. */
+  def +(offset: Position): Cell = Cell(cell.row + offset.row, cell.column + offset.column)
+
   /** @returns
     *   The neighbouring [Cell]s of the current [Cell].
     */
-  def neighbouringCells: List[Cell] =
+  def neighbours: List[Cell] =
     (for
       deltaRow    <- -1 to 1
       deltaColumn <- -1 to 1
       if !(deltaRow == 0 && deltaColumn == 0)
-    yield Cell(cell.row + deltaRow, cell.column + deltaColumn)).toList
+    yield cell + Position(deltaRow, deltaColumn)).toList
