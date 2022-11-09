@@ -1,7 +1,7 @@
 name: Acceptance Cycle
 
 on:
-  workfloe_run:
+  workflow_run:
     workflows: ["Commit Cycle"]
     types:
       - completed

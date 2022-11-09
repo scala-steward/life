@@ -1,7 +1,7 @@
 name: Publish Cycle
 
 on:
-  workfloe_run:
+  workflow_run:
     workflows: ["Acceptance Cycle"]
     types:
       - completed
