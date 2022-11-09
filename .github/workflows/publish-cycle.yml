@@ -1,9 +1,10 @@
-name: Build
+name: Publish Cycle
 
 on:
-  push:
-    branches:
-      - main
+  workflow_run:
+    workflows: ["Acceptance Cycle"]
+    types:
+      - completed
 
 permissions:
   contents: write
