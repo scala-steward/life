@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - develop
-      - feature/*
-      - hotfix/*
+      - feature/**
+      - hotfix/**
 
 permissions:
   contents: write
