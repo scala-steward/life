@@ -1,0 +1,29 @@
+# Release from develop snapshot to main
+#
+name: Release Cycle
+
+on:
+  workflow_run:
+    workflows: [Acceptance Cycle]
+    types: [completed]
+    branches: [develop]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: "17"
+          distribution: "temurin"
+          cache: "sbt"
+
+      - name: Build
+        run: |
+          sbt release with-defaults

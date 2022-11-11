@@ -1,3 +1,5 @@
+# Run acceptance tests before releasing.
+#
 name: Acceptance Cycle
 
 on:

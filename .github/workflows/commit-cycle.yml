@@ -1,3 +1,5 @@
+# Quick feedback for unit tests on non-main commits
+#
 name: Commit Cycle
 
 on:
