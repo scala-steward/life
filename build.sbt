@@ -1,8 +1,11 @@
 val scala3Version = "3.2.1"
 
 organizationName := "Nigel Eke"
+organization     := "nigeleke"
 startYear        := Some(2022)
 licenses += ("BSD-3-Clause", new URL("https://opensource.org/licenses/BSD-3-Clause"))
+
+publish / skip := true
 
 val configVersion        = "1.4.2"
 val scalatestVersion     = "3.2.14"
