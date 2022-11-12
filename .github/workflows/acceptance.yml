@@ -41,9 +41,11 @@ jobs:
           sbt coverageReport
           export COVERAGE=$(xmllint --xpath "(/scoverage/@statement-rate + /scoverage/@branch-rate) div 2" target/scala-3.2.1/scoverage-report/scoverage.xml)
           echo $COVERAGE
-          if [ $COVERAGE < 75 ]
+          if [ $COVERAGE < 75 ];
+          then
             echo "failed"
-          else if [ $COVERAGE < 90 ]
+          else if [ $COVERAGE < 90 ];
+          then
             echo "warning"
           else
             echo "passed"
