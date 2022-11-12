@@ -1,0 +1,28 @@
+# Release from develop snapshot to main.
+#
+name: Release Cycle
+
+on:
+  workflow_dispatch:
+    branches:
+      - develop
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: "17"
+          distribution: "temurin"
+          cache: "sbt"
+
+      - name: Build
+        run: |
+          git checkout -b release/v
+          sbt release with-defaults
