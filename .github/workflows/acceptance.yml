@@ -44,7 +44,7 @@ jobs:
         id: vars
         run: |
           sbt coverageReport
-          echo "::setOutput:coverage=xmllint --xpath '(/scoverage/@statement-rate + /scoverage/@branch-rate) div 2' target/scala-3.2.1/scoverage-report/scoverage.xml"
+          echo '::set-output coverage=xmllint --xpath "(/scoverage/@statement-rate + /scoverage/@branch-rate) div 2" target/scala-3.2.1/scoverage-report/scoverage.xml'
 
       - name: Coverage Check
         run: |
