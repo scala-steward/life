@@ -43,10 +43,10 @@ jobs:
 
       - name: Coverage Check
         run: |
-          echo ${{ steps.c1.outputs.c2 }}
-          if [ ${{ steps.c1.outputs.c2 }} < 75 ]
+          echo "${{ steps.c1.outputs.c2 }}"
+          if [ "${{ steps.c1.outputs.c2 }}" < 75 ]
             echo "failed"
-          else if [ ${{ steps.c1.outputs.c2 }} < 90 ]
+          else if [ "${{ steps.c1.outputs.c2 }}" < 90 ]
             echo "warning"
           else
             echo "passed"
