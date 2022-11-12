@@ -39,7 +39,7 @@ jobs:
         id: c1
         run: |
           sbt coverageReport
-          echo "##[set-output name=c2;]$(42)"
+          echo "c2=$(42)" >> $GITHUB_OUTPUT
 #          echo '::set-output name=c2::$(xmllint --xpath "(/scoverage/@statement-rate + /scoverage/@branch-rate) div 2" target/scala-3.2.1/scoverage-report/scoverage.xml)'
 
       - name: Coverage Check
