@@ -46,21 +46,20 @@ jobs:
           sbt coverageReport
           echo '::set-output name=coverage::$(xmllint --xpath "(/scoverage/@statement-rate + /scoverage/@branch-rate) div 2" target/scala-3.2.1/scoverage-report/scoverage.xml)'
 
-    outputs:
-      coverage-percent: ${{ steps.coverage.outputs.coverage }}
+      - name: Coverage Result - Fail Check
+        if: ${{ needs.acceptance.outputs.coverage-percent < 200 }}
+        run: |
+          echo "+++++"
+          echo "Coverage ${{ steps.coverage.outputs.coverage }}"
+          echo ${{ steps.coverage.outputs.coverage }}
+          echo 'Coverage ${{ steps.coverage.outputs.coverage }}'
+          echo "-----"
 
-  acceptance-result-fail:
-    needs: acceptance
-    if: ${{ needs.acceptance.outputs.coverage-percent < 200 }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Fail
-        run: echo "failed..."
-
-  acceptance-result-pass:
-    needs: acceptance
-    if: ${{ needs.acceptance.outputs.coverage-percent >= 200 }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Pass
-        run: echo "passed..."
+      - name: Coverage Result - Pass Check
+        if: ${{ needs.acceptance.outputs.coverage-percent >= 200 }}
+        run: |
+          echo "+++++ +++++ +++++"
+          echo "Coverage ${{ steps.coverage.outputs.coverage }}"
+          echo ${{ steps.coverage.outputs.coverage }}
+          echo 'Coverage ${{ steps.coverage.outputs.coverage }}'
+          echo "----- ----- -----"
