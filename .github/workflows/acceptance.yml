@@ -36,17 +36,17 @@ jobs:
         run: sbt coverage test
 
       - name: Coverage Report
-        id: coverage
+        id: c1
         run: |
           sbt coverageReport
-          echo '::set-output name=coverage::$(xmllint --xpath "(/scoverage/@statement-rate + /scoverage/@branch-rate) div 2" target/scala-3.2.1/scoverage-report/scoverage.xml)'
+          echo '::set-output name=c2::$(xmllint --xpath "(/scoverage/@statement-rate + /scoverage/@branch-rate) div 2" target/scala-3.2.1/scoverage-report/scoverage.xml)'
 
       - name: Coverage Check
         run: |
-          echo ${{ steps.coverage.outputs.coverage }}
-          if [ ${{ steps.coverage.outputs.coverage }} < 75 ]
+          echo ${{ steps.c1.outputs.c2 }}
+          if [ ${{ steps.c1.outputs.c2 }} < 75 ]
             echo "failed"
-          else if [ ${{ steps.coverage.outputs.coverage }} < 90 ]
+          else if [ ${{ steps.c1.outputs.c2 }} < 90 ]
             echo "warning"
           else
             echo "passed"
