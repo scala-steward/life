@@ -41,9 +41,15 @@ jobs:
           sbt publishM2
 
       - name: Coverage Report
+        id: vars
         run: |
           sbt coverageReport
-          xmllint --xpath "(/scoverage/@statement-rate + /scoverage/@branch-rate) div 2" target/scala-3.2.1/scoverage-report/scoverage.xml
+          echo coverage=xmllint --xpath "(/scoverage/@statement-rate + /scoverage/@branch-rate) div 2" target/scala-3.2.1/scoverage-report/scoverage.xml
 
-      - name: Release
-        uses: ./.github/workflows/release.yml
+      - name: Coverage Check
+        run: echo "Coverage is ${{steps}} %"
+        run: echo "Coverage is ${{steps.vars}} %"
+        run: echo "Coverage is ${{steps.vars.output.coverage}} %"
+
+  release:
+    uses: ./.github/workflows/release.yml
