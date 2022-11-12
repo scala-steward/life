@@ -44,7 +44,7 @@ jobs:
           if [ $COVERAGE < 75 ];
           then
             echo "failed"
-          else if [ $COVERAGE < 90 ];
+          elif [ $COVERAGE < 90 ];
           then
             echo "warning"
           else
