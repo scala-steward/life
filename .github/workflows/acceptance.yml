@@ -35,12 +35,12 @@ jobs:
       - name: Test
         run: sbt coverage test
 
+      #          export COVERAGE=$(xmllint --xpath "(/scoverage/@statement-rate + /scoverage/@branch-rate) div 2" target/scala-3.2.1/scoverage-report/scoverage.xml)
       - name: Coverage Report
         id: c1
         run: |
           sbt coverageReport
-#          export COVERAGE=$(xmllint --xpath "(/scoverage/@statement-rate + /scoverage/@branch-rate) div 2" target/scala-3.2.1/scoverage-report/scoverage.xml)
-          export COVERAGE=42
+          export COVERAGE=$(42)
           echo $COVERAGE
           if [ $COVERAGE < 75 ];
           then
