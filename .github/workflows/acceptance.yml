@@ -39,16 +39,15 @@ jobs:
         id: c1
         run: |
           sbt coverageReport
-          export COVERAGE=$(xmllint --xpath "(/scoverage/@statement-rate + /scoverage/@branch-rate) div 2" target/scala-3.2.1/scoverage-report/scoverage.xml)
+#          export COVERAGE=$(xmllint --xpath "(/scoverage/@statement-rate + /scoverage/@branch-rate) div 2" target/scala-3.2.1/scoverage-report/scoverage.xml)
+          export COVERAGE=42
           echo $COVERAGE
           if [ $COVERAGE < 75 ];
           then
-            echo "failed"
+            echo "::error Insufficient coverage; required 75% or more, got $COVERAGE"
           elif [ $COVERAGE < 90 ];
           then
-            echo "warning"
-          else
-            echo "passed"
+            echo "::warning Insufficient coverage; required 75%, preferred 90% or more, got $COVERAGE"
           fi
 
       - name: Publish Check
