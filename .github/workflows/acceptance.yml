@@ -40,27 +40,7 @@ jobs:
       - name: Coverage Report
         run: |
           sbt coverageReport
-          ls target
-          ls target/scala-3.2.1
-
-      - name: Coverage
-        id: statement-coverage
-        uses: mavrosxristoforos/get-xml-info@1.0
-        with:
-          xml-file: 'target/scala-3.2.1/scoverage-report/scoverage.xml'
-          xpath: '/scoverage/@statement-rate'
-
-      - name: Coverage
-        id: branch-coverage
-        uses: mavrosxristoforos/get-xml-info@1.0
-        with:
-          xml-file: 'target/scala-3.2.1/scoverage-report/scoverage.xml'
-          xpath: '/scoverage/@branch-rate'
-
-      - name: Echo
-        run: |
-          echo ${{steps.coverage.outputs.info}}
-          echo ${{steps.coverage.outputs}}
+          xmllint --xpath "(/scoverage/@statement-rate + /scoverage/@branch-rate) div 2" target/scala-3.2.1/scoverage-report/scoverage.xml
 
       - name: Release
         uses: ./.github/workflows/release.yml
