@@ -44,11 +44,18 @@ jobs:
           ls target/scala-3.2.1
 
       - name: Coverage
-        id: coverage
+        id: statement-coverage
         uses: mavrosxristoforos/get-xml-info@1.0
         with:
           xml-file: 'target/scala-3.2.1/scoverage-report/scoverage.xml'
-          xpath: '(/scoverage/@statement-rate + /scoverage/@branch-rate) div 2'
+          xpath: '/scoverage/@statement-rate'
+
+      - name: Coverage
+        id: branch-coverage
+        uses: mavrosxristoforos/get-xml-info@1.0
+        with:
+          xml-file: 'target/scala-3.2.1/scoverage-report/scoverage.xml'
+          xpath: '/scoverage/@branch-rate'
 
       - name: Echo
         run: |
