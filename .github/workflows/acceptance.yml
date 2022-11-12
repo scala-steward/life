@@ -40,11 +40,11 @@ jobs:
         id: c1
         run: |
           sbt coverageReport
-          export COVERAGE=80
+          export COVERAGE=42
           echo $COVERAGE
           if [ $COVERAGE -lt 75 ];
           then
-            echo "::error file=scoverage.xml::Insufficient coverage; required 75% or more, got $COVERAGE"
+            echo "::setFailed file=scoverage.xml::Insufficient coverage; required 75% or more, got $COVERAGE"
           elif [ $COVERAGE -lt 90 ];
           then
             echo "::warning file=scoverage.xml::Insufficient coverage; required 75%, preferred 90% or more, got $COVERAGE"
