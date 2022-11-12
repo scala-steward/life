@@ -50,6 +50,3 @@ jobs:
         run: echo "Coverage is ${{steps}} %"
         run: echo "Coverage is ${{steps.vars}} %"
         run: echo "Coverage is ${{steps.vars.output.coverage}} %"
-
-  release:
-    uses: ./.github/workflows/release.yml
