@@ -45,18 +45,17 @@ jobs:
       - name: Coverage Check
         with:
           coverage-percent: "${{ steps.c1.outputs.C2 }}"
-        run: |
-          echo $coverage-percent
-          if [ $coverage-percent < 75 ]
-            echo "failed"
-          else if [ $coverage-percent < 90 ]
-            echo "warning"
-          else
-            echo "passed"
-          fi
+          run: |
+            echo $coverage-percent
+            if [ $coverage-percent < 75 ]
+              echo "failed"
+            else if [ $coverage-percent < 90 ]
+              echo "warning"
+            else
+              echo "passed"
+            fi
 
       - name: Publish Check
         run: |
           sbt publishLocal
           sbt publishM2
-
