@@ -44,7 +44,8 @@ jobs:
           echo $COVERAGE
           if [ $COVERAGE -lt 75 ];
           then
-            echo "::setFailed file=scoverage.xml::Insufficient coverage; required 75% or more, got $COVERAGE"
+            echo "::error file=scoverage.xml::Insufficient coverage; required 75% or more, got $COVERAGE"
+            exit 1
           elif [ $COVERAGE -lt 90 ];
           then
             echo "::warning file=scoverage.xml::Insufficient coverage; required 75%, preferred 90% or more, got $COVERAGE"
