@@ -47,6 +47,7 @@ jobs:
           echo coverage=xmllint --xpath "(/scoverage/@statement-rate + /scoverage/@branch-rate) div 2" target/scala-3.2.1/scoverage-report/scoverage.xml
 
       - name: Coverage Check
-        run: echo "Coverage is ${{steps}} %"
-        run: echo "Coverage is ${{steps.vars}} %"
-        run: echo "Coverage is ${{steps.vars.output.coverage}} %"
+        run: |
+          echo "Coverage is ${{steps}} %"
+          echo "Coverage is ${{steps.vars}} %"
+          echo "Coverage is ${{steps.vars.output.coverage}} %"
