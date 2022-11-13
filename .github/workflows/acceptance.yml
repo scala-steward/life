@@ -74,6 +74,11 @@ jobs:
           git config --global user.name "Nigel Eke"
           sbt "release with-defaults"
           export VERSION=$(git describe --abbrev=0 --tags)
+          echo $VERSION
+          git log
           git checkout main
-          git merge $VERSION
-          git push
+          git log
+
+
+#          git merge $VERSION
+#          git push
