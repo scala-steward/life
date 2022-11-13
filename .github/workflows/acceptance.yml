@@ -77,5 +77,5 @@ jobs:
           echo $VERSION
           echo log
           git log
-          echo pull-request
-          git pull-request https://github.com/nigeleke/life.git main
+          echo request-pull
+          git request-pull https://github.com/nigeleke/life.git main
