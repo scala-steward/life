@@ -4,13 +4,8 @@ name: Commit Cycle
 
 on:
   push:
-    branches:
-      - develop
-      - feature/**
-      - hotfix/**
-
-permissions:
-  contents: write
+    branches-ignore:
+      - main
 
 jobs:
   build:
