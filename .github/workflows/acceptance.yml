@@ -81,4 +81,4 @@ jobs:
           git push
 
       - name: Publish
-        use: ./.github/workflows/publish.yml
+        uses: ./.github/workflows/publish.yml
