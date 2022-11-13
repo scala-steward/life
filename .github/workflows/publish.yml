@@ -4,7 +4,7 @@
 name: Publish Cycle
 
 on:
-  workflow-call:
+  workflow_call:
     branches: main
 
 permissions:

@@ -80,5 +80,6 @@ jobs:
           git merge $VERSION
           git push
 
-      - name: Publish
-        uses: ./.github/workflows/publish.yml
+  publish:
+    needs: release
+    uses: ./.github/workflows/publish.yml
