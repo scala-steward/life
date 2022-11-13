@@ -24,7 +24,7 @@ jobs:
 
       - name: Build
         run: |
-          sbt release with-defaults
+          sbt "release with-defaults"
           export VERSION=$(git describe --abbrev=0 --tags)
           git checkout main
           git merge $VERSION
