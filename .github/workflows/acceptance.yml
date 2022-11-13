@@ -78,4 +78,4 @@ jobs:
           echo log
           git log
           echo request-pull
-          git request-pull https://github.com/nigeleke/life.git main
+          git request-pull $VERSION https://github.com/nigeleke/life.git main
