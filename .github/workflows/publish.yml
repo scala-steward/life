@@ -3,10 +3,10 @@
 #
 name: Publish Cycle
 
-on:
-  push:
-    branches:
-      - main
+#on:
+#  pull-request:
+#    branches:
+#      - main
 
 permissions:
   contents: write

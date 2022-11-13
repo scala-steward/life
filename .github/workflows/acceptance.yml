@@ -75,12 +75,7 @@ jobs:
           sbt "release with-defaults"
           export VERSION=$(git describe --abbrev=0 --tags)
           echo $VERSION
+          echo log
           git log
-          git checkout main
-          git pull
-          git merge $VERSION
-          git log
-          git checkout develop
-
-#          git merge $VERSION
-#          git push
+          echo pull-request
+          git pull-request https://github.com/nigeleke/life.git main
