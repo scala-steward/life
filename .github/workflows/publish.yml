@@ -4,9 +4,8 @@
 name: Publish Cycle
 
 on:
-  push:
-    branches:
-      - main
+  workflow-call:
+    branches: main
 
 permissions:
   contents: write
