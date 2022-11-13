@@ -90,28 +90,26 @@ extension (w: World)
   /** Add some additional [Cells] to the current [World].
     * @param cells
     *   The [Cells] to be added.
-    * @param row
-    *   The row offset in the current [World] where the new [Cells] will be added.
-    * @param column
-    *   The column offset in the current [World] where the new [Cells] will be added.
+    * @param offset
+    *   The offset within the current [World] where the new [Cells] will be added.
     * @return
     *   The [World] with the additional [Cells].
     */
-  def withCells(cells: Cells, row: Int, column: Int): World =
-    val offsetCells = cells.map(c => Cell(c.row + row, c.column + column))
+  def withCells(cells: Cells, offset: Position): World =
+    val offsetCells = cells.map(_ + offset)
     w.copy(liveCells = w.liveCells ++ offsetCells).removingOffworlders
 
-  private def isLive(c: Cell): Boolean = w.liveCells.contains(c)
+  private def isLive(cell: Cell): Boolean = w.liveCells.contains(cell)
 
-  private def neighboursCount(c: Cell): Int = c.neighbouringCells.count(isLive)
+  private def neighbourCount(cell: Cell): Int = cell.neighbours.count(isLive)
 
   /** @return
     *   The next generation of the [World], using the rules of life.
     */
   def nextGeneration: World =
-    val allNeighbours   = w.liveCells.map(_.neighbouringCells).flatten
+    val allNeighbours   = w.liveCells.map(_.neighbours).flatten
     val allCells        = w.liveCells ++ allNeighbours
-    val neighbourCounts = allCells.map(c => (c, w.neighboursCount(c)))
+    val neighbourCounts = allCells.map(c => (c, w.neighbourCount(c)))
     val dyingCells      = neighbourCounts.filter((_, count) => count < 2 || count > 3).map(_._1)
     val bornCells       = neighbourCounts.filter((_, count) => count == 3).map(_._1)
     w.copy(liveCells = w.liveCells -- dyingCells ++ bornCells).removingOffworlders

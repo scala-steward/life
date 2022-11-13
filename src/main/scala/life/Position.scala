@@ -30,25 +30,8 @@
 
 package life
 
-/** A [Cell] an a board, specifying its position.
+/** Arbitary [Position] on a board.
   * @param row
-  *   The [Cell]'s row.
   * @param column
-  *   The [Cell]'s column.
   */
-final case class Cell(row: Int, column: Int)
-
-extension (cell: Cell)
-
-  /** Translate the [Cell] by the [Position]. */
-  def +(offset: Position): Cell = Cell(cell.row + offset.row, cell.column + offset.column)
-
-  /** @returns
-    *   The neighbouring [Cell]s of the current [Cell].
-    */
-  def neighbours: List[Cell] =
-    (for
-      deltaRow    <- -1 to 1
-      deltaColumn <- -1 to 1
-      if !(deltaRow == 0 && deltaColumn == 0)
-    yield cell + Position(deltaRow, deltaColumn)).toList
+final case class Position(row: Int, column: Int)

@@ -92,33 +92,32 @@ object Cells:
 extension (cells: Cells)
   def bounds: Bounds =
     val head :: rest = cells.toList: @unchecked
-    val headBounds   = (head.row, head.row, head.column, head.column)
+    val headBounds   = Bounds(head.row to head.row, head.column to head.column)
 
-    def updateBounds(bounds: (Int, Int, Int, Int), cell: Cell) =
-      (
-        Math.min(bounds._1, cell.row),
-        Math.max(bounds._2, cell.row),
-        Math.min(bounds._3, cell.column),
-        Math.max(bounds._4, cell.column)
-      )
+    def updateBounds(bounds: Bounds, cell: Cell) =
+      bounds match
+        case Bounds(rows, columns) =>
+          val updatedRows    = Math.min(rows.min, cell.row) to Math.max(rows.max, cell.row)
+          val updatedColumns = Math.min(columns.min, cell.column) to Math.max(columns.max, cell.column)
+          Bounds(updatedRows, updatedColumns)
 
-    val (minRow, maxRow, minColumn, maxColumn) = rest.foldLeft(headBounds)(updateBounds)
-    Bounds(minRow to maxRow, minColumn to maxColumn)
+    rest.foldLeft(headBounds)(updateBounds)
 
   def rotate(n: Int) =
-    val realN = if n >= 0 then n % 4 else (4 + n % 4) % 4
-    val bounds = cells.bounds
-    val source = for
-      sourceRow    <- bounds.rows
-      sourceColumn <- bounds.columns
-    yield Cell(sourceRow, sourceColumn)
+    val order   = 4
+    val modulus = n % order
+    val cycle   = if modulus >= 0 then modulus else order + modulus
 
-    val targets = Array(
-      source,
-      for (targetColumn <- bounds.rows.reverse; targetRow <- bounds.columns) yield Cell(targetRow, targetColumn),
-      for (targetRow <- bounds.rows.reverse; targetColumn <- bounds.columns.reverse) yield Cell(targetRow, targetColumn),
-      for (targetColumn <- bounds.rows; targetRow <- bounds.columns.reverse) yield Cell(targetRow, targetColumn)
-    )
+    val bounds               = cells.bounds
+    val boundsRow            = IndexedSeq.from(bounds.rows)
+    val boundsRowReversed    = IndexedSeq.from(boundsRow.reverse)
+    val boundsColumn         = IndexedSeq.from(bounds.columns)
+    val boundsColumnReversed = IndexedSeq.from(boundsColumn.reverse)
 
-    val mapping = source.zip(targets(realN)).toMap
-    cells.map(mapping)
+    def rotate0(cell: Cell)   = cell // indentity
+    def rotate90(cell: Cell)  = Cell(cell.column, boundsRowReversed(cell.row))
+    def rotate180(cell: Cell) = Cell(boundsRowReversed(cell.row), boundsColumnReversed(cell.column))
+    def rotate270(cell: Cell) = Cell(boundsColumnReversed(cell.column), cell.row)
+
+    val rotate = IndexedSeq(rotate0, rotate90, rotate180, rotate270)(cycle)
+    cells.map(rotate)
