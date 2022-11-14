@@ -118,10 +118,9 @@ jobs:
           target-folder: coverage
           clean: false
 
-# @Todo: Add this and publish when https://github.com/lampepfl/dotty/issues/16290 resolved.
-#      - name: Publish API
-#        uses: JamesIves/github-pages-deploy-action@v4
-#        with:
-#          folder: target/api
-#          target-folder: coverage
-#          clean: false
+      - name: Publish API
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: target/scala-3.2.1/api
+          target-folder: api
+          clean: false
