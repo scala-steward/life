@@ -8,12 +8,12 @@ name: Publish Cycle
 on:
   workflow_run:
     workflows: ["Acceptance Cycle"]
-    branches: [main]
+    branches: [develop]
     types:
       - completed
 
 jobs:
-  acceptance:
+  publish:
     runs-on: ubuntu-latest
 
     steps:
