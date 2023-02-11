@@ -3,7 +3,6 @@
 # Acceptance cycle comprises:
 # - run tests on develop
 # - release into main with bumped versions
-# - publish site, coverage reports and API documentation to https://nigeleke.github.io
 #
 name: Acceptance Cycle
 
