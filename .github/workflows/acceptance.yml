@@ -107,23 +107,4 @@ jobs:
       - name: Build
         run: |
           git checkout main
-          sbt clean coverage headerCheck test coverageReport
-
-      - name: Publish Site
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          folder: .
-
-      - name: Publish Coverage
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          folder: target/scala-3.3.0-RC2/scoverage-report
-          target-folder: coverage
-          clean: false
-
-      - name: Publish API
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          folder: target/scala-3.3.0-RC2/api
-          target-folder: api
-          clean: false
+          sbt clean coverage headerCheck test coverageReport doc
