@@ -5,6 +5,7 @@
 .DS_Store
 
 # sbt specific
+docs/
 dist/*
 target/
 lib_managed/

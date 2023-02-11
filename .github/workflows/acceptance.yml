@@ -108,3 +108,18 @@ jobs:
         run: |
           git checkout main
           sbt clean coverage headerCheck test coverageReport doc
+          mkdir docs
+          mkdir docs/api
+          mkdir docs/coverage
+          cp README.md docs/
+          cp -R target/scala-3.3.0-RC2/api/* docs/api
+          cp -R target/scala-3.3.0-RC2/scoverage-report/* docs/coverage
+
+      - name: Publish
+        run: |
+          git config --global user.email "nigeleke@users.noreply.github.com"
+          git config --global user.name "Nigel Eke"
+          git checkout gh-pages
+          git add .
+          git commit -m "Release"
+          git push
