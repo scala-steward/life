@@ -35,19 +35,21 @@ jobs:
       - name: Build
         run: | 
           sbt clean headerCheck coverage test coverageReport doc
-          export COVERAGE=$(xmllint --xpath "round((/scoverage/@statement-rate + /scoverage/@branch-rate) div 2)" target/scala-3.3.0-RC2/scoverage-report/scoverage.xml)
-          mkdir docs
-          mkdir docs/api
-          mkdir docs/coverage
-          cp README.md docs/
-          cp -R target/scala-3.3.0-RC2/api/* docs/api
-          cp -R target/scala-3.3.0-RC2/scoverage-report/* docs/coverage
+          mkdir docs0
+          mkdir docs0/api
+          mkdir docs0/coverage
+          cp README.md docs0/
+          cp -R target/scala-3.3.0-RC2/api/* docs0/api
+          cp -R target/scala-3.3.0-RC2/scoverage-report/* docs0/coverage
 
       - name: Publish
         run: |
           git config --global user.email "nigeleke@users.noreply.github.com"
           git config --global user.name "Nigel Eke"
+          export VERSION=$(git describe --abbrev=0 --tags)
           git checkout gh-pages
+          rm -rf docs
+          mv docs0 docs
           git add .
-          git commit -m "Release"
+          git commit -m "Release $VERSION"
           git push
