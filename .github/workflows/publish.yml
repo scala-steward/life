@@ -42,6 +42,9 @@ jobs:
           cp -R target/scala-3.3.0-RC2/api/* docs0/api
           cp -R target/scala-3.3.0-RC2/scoverage-report/* docs0/coverage
 
+      - name: Publish to Codecov
+        uses: codecov/codecov-action@v3
+
       - name: Publish
         run: |
           git config --global user.email "nigeleke@users.noreply.github.com"
