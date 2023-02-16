@@ -41,7 +41,7 @@ class GenerationsSpec extends AnyWordSpec with Matchers:
     }
 
     "stop when the World is dead" in {
-      val world = World.withCells(Set(Cell(0, 0)))
+      val world       = World.withCells(Set(Cell(0, 0)))
       val generations = Generations(world)
       generations.hasNext should be(true)
       generations.next() should be(world)
