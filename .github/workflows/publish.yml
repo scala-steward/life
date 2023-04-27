@@ -36,8 +36,8 @@ jobs:
           mkdir docs0/api
           mkdir docs0/coverage
           cp README.md docs0/
-          cp -R target/scala-3.3.0-RC3/api/* docs0/api
-          cp -R target/scala-3.3.0-RC3/scoverage-report/* docs0/coverage
+          cp -R target/scala-3.3.0-RC5/api/* docs0/api
+          cp -R target/scala-3.3.0-RC5/scoverage-report/* docs0/coverage
 
       - name: Publish to Codecov
         uses: codecov/codecov-action@v3
