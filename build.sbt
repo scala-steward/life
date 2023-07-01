@@ -10,7 +10,7 @@ val scalatestVersion     = "3.2.16"
 val scalatestPlusVersion = scalatestVersion + ".0"
 
 ThisBuild / versionScheme := Some("early-semver")
-ThisBuild / publishTo := Some(Resolver.defaultLocal)
+ThisBuild / publishTo     := Some(Resolver.defaultLocal)
 
 lazy val root = project
   .in(file("."))
