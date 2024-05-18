@@ -31,13 +31,14 @@ jobs:
 
       - name: Build
         run: |
-          sbt clean headerCheck coverage test coverageReport doc
+          sbt clean headerCheck coverage test coverageAggregate doc
           mkdir docs0
-          mkdir docs0/api
-          mkdir docs0/coverage
+          mkdir -p docs0/core/api
+          mkdir -p docs0/coverage
           cp README.md docs0/
-          cp -R target/scala-3.4.1/api/* docs0/api
-          cp -R target/scala-3.4.1/scoverage-report/* docs0/coverage
+          VERSION=$(sbt -Dsbt.log.noformat=true "show core/scalaVersion" | grep -oP '(?<=\[info\] )\d+\.\d+\.\d+')
+          cp -R core/target/scala-$VERSION/api/* docs0/core/api
+          cp -R target/scala-2.12/scoverage-report/* docs0/coverage
 
       - name: Publish to Codecov
         uses: codecov/codecov-action@v3
