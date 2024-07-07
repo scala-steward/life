@@ -21,6 +21,6 @@ lazy val root = project
       "com.typesafe"       % "config"          % configVersion,
       "org.scalactic"     %% "scalactic"       % scalatestVersion,
       "org.scalatest"     %% "scalatest"       % scalatestVersion     % "test",
-      "org.scalatestplus" %% "scalacheck-1-17" % scalatestPlusVersion % "test"
+      "org.scalatestplus" %% "scalacheck-1-18" % scalatestPlusVersion % "test"
     )
   )
